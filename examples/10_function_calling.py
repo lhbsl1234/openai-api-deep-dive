@@ -23,7 +23,7 @@ Run it:
 
     secrun python examples/10_function_calling.py
 """
-
+from pathlib import Path
 import json
 import os
 import sys
@@ -32,11 +32,35 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+#USE_DEEPSEEK = True
+USE_DEEPSEEK = False
 
-client = OpenAI()
+client: OpenAI
+model_name: str
+
+if USE_DEEPSEEK:
+    # 读取 DeepSeek Key
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        sys.exit("OPENAI_API_KEY not found in .env (see SECRETS.md), please check your configuration!")
+
+    client = OpenAI(
+        base_url="https://api.deepseek.com/v1",
+        api_key=api_key
+    )
+    model_name = "deepseek-v4-flash"
+    extra_params = {}   # 云端：不带任何ollama私有参数
+
+else:
+    # 本地 Ollama Qwen3
+    client = OpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="dummy"
+    )
+    model_name = "qwen3:8b-q4_K_M"
+    extra_params = {"keep_alive": -1} # 本地Ollama才启用驻留
 
 
 # --- The actual function the model is allowed to ask us to run. ---
@@ -72,7 +96,7 @@ messages: list[ChatCompletionMessageParam] = [
 
 # First call: the model decides it needs the tool.
 first = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model=model_name,
     messages=messages,
     tools=tools,
 )
@@ -104,7 +128,7 @@ for call in reply.tool_calls or []:
 
 # Second call: the model now has the data and writes the final answer.
 second = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model=model_name,
     messages=messages,
     tools=tools,
 )
