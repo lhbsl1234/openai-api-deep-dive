@@ -38,14 +38,18 @@ load_dotenv()
 if not os.getenv("OPENAI_API_KEY"):
     sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://api.deepseek.com/v1",
+    api_key=os.getenv("OPENAI_API_KEY")
+
+)
 console = Console()  # rich's entry point; console.print() understands rich objects
 
 # --- 1. Render a Markdown answer from the model ---------------------------------
 # Ask explicitly for Markdown, then hand the string to rich.Markdown so headings,
 # bold, and lists render as formatting instead of literal symbols.
 response = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="deepseek-v4-flash",
     messages=[
         {
             "role": "user",

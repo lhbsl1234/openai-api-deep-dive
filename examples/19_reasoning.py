@@ -33,19 +33,22 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
+if not os.getenv("DASHSCOPE_API_KEY"):
+    sys.exit("Set DASHSCOPE_API_KEY via secrun (see SECRETS.md) and try again.")
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key=os.getenv("DASHSCOPE_API_KEY")
+)
 
 # Override with REASONING_MODEL in .env if your account has a different one
 # available (o3, o3-mini, a gpt-5 reasoning tier, ...).
-MODEL = os.getenv("REASONING_MODEL", "o4-mini")
+MODEL = "qwen3.7-plus"
 
 # A puzzle that rewards working step-by-step rather than blurting an answer.
 PROBLEM = (
     "A 3-gallon jug and a 5-gallon jug, and a tap. Measure out exactly 4 gallons. "
-    "Give the shortest sequence of fill/empty/pour steps."
+    "Give the shortest sequence of fill/empty/pour steps.use chinese to answer."
 )
 
 print(f"Model: {MODEL}   (reasoning_effort=high)\n")
@@ -56,7 +59,7 @@ response = client.chat.completions.create(
     # Note: no temperature here; reasoning models don't use it.
     reasoning_effort="high",
     messages=[
-        {"role": "developer", "content": "You are a careful puzzle solver. Show the final steps only."},
+        {"role": "system", "content": "You are a careful puzzle solver. Show the final steps only."},
         {"role": "user", "content": PROBLEM},
     ],
 )

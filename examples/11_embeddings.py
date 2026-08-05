@@ -35,11 +35,11 @@ from openai import OpenAI
 
 from utils.pricing import estimate_embedding_cost, format_cost
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
-
-client = OpenAI()
+# 本地 Ollama Qwen3
+client = OpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="dummy"
+    )
 
 
 def cosine_similarity(a: list[float], b: list[float]) -> float:
@@ -58,7 +58,7 @@ candidates = [
 
 # You can embed many texts in one call: pass a list. We embed the query and all
 # candidates together.
-model = "text-embedding-3-small"
+model = "nomic-embed-text"
 response = client.embeddings.create(
     model=model,
     input=[query] + candidates,
@@ -80,5 +80,6 @@ print(f"\n(Each vector has {len(query_vec)} dimensions.)")
 
 # Embeddings are cheap, but not free. The response reports the tokens billed.
 tokens = response.usage.prompt_tokens
-print(f"Billed {tokens} input tokens -> "
-      f"{format_cost(estimate_embedding_cost(model, tokens))}")
+#print(f"Billed {tokens} input tokens -> "
+#      f"{format_cost(estimate_embedding_cost(model, tokens))}")
+print(f"Billed {tokens} input tokens -> ")

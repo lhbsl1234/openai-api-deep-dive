@@ -34,7 +34,7 @@ from openai import OpenAI, APIConnectionError
 
 # No real key needed: the local server ignores it, but the SDK requires a value.
 BASE_URL = os.getenv("LOCAL_BASE_URL", "http://localhost:11434/v1")
-MODEL = os.getenv("LOCAL_MODEL", "llama3.2")
+MODEL = os.getenv("LOCAL_MODEL", "qwen3:8b-q4_K_M")
 
 client = OpenAI(base_url=BASE_URL, api_key="local-no-key-needed")
 

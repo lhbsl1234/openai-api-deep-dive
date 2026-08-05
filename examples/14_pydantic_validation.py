@@ -38,7 +38,10 @@ load_dotenv()
 if not os.getenv("OPENAI_API_KEY"):
     sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
 
-client = OpenAI()
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="dummy"
+)
 
 
 # 1. Describe the shape as Pydantic models. Field(...) descriptions are sent to
@@ -73,7 +76,7 @@ def average(numbers):
 
 # 2. Pass the MODEL CLASS as response_format. No schema dict, no json.loads.
 response = client.chat.completions.parse(
-    model="gpt-4o-mini",
+    model="qwen3:8b-q4_K_M",
     messages=[
         {"role": "system", "content": "You are a meticulous code reviewer."},
         {"role": "user", "content": f"Review this code:\n```\n{code}\n```"},

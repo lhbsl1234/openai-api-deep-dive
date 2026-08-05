@@ -30,7 +30,7 @@ Run it:
 It deliberately requests a nonexistent model to show a NotFoundError being
 caught, then makes a normal call with tuned timeout/retry settings.
 """
-
+from pathlib import Path
 import os
 import sys
 
@@ -38,14 +38,29 @@ import openai
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+    # 读取 DeepSeek Key
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+        sys.exit("OPENAI_API_KEY not found in .env (see SECRETS.md), please check your configuration!")    
+
+client = OpenAI(
+        base_url="https://api.deepseek.com/v1",
+        api_key=api_key,
+        timeout=20.0, 
+        max_retries=3
+    )
+    # model_name = "deepseek-v4-flash"
+    #extra_params = {}   # 云端：不带任何ollama私有参数
+
+
 
 # Per-client config. `timeout` is in seconds; `max_retries` overrides the
 # default of 2. (You can also override per-call with
 # `client.with_options(timeout=5).chat.completions.create(...)`.)
-client = OpenAI(timeout=20.0, max_retries=3)
+#client = OpenAI(timeout=20.0, max_retries=3)
 
 
 def ask(model: str, question: str) -> str | None:
@@ -97,6 +112,6 @@ ask("gpt-4o-mini-does-not-exist", "Hello?")
 
 # 2. A normal request that succeeds, using the tuned client.
 print("\n--- a normal request ---")
-answer = ask("gpt-4o-mini", "In one sentence, why is retry logic important?")
+answer = ask("deepseek-v4-flash", "In one sentence, why is retry logic important?")
 if answer:
     print(answer)

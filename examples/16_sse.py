@@ -62,7 +62,10 @@ load_dotenv()
 if not os.getenv("OPENAI_API_KEY"):
     sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://api.deepseek.com/v1",
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
 PROMPT = "Give three one-sentence reasons why streaming matters for AI UIs."
 
@@ -74,7 +77,7 @@ PROMPT = "Give three one-sentence reasons why streaming matters for AI UIs."
 print("=== raw SSE events (as they appear on the wire) ===\n")
 
 stream = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="deepseek-v4-flash",
     messages=[{"role": "user", "content": PROMPT}],
     stream=True,
     stream_options={"include_usage": True},  # usage arrives in the final chunk

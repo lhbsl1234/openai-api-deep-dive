@@ -32,10 +32,13 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
+if not os.getenv("DASHSCOPE_API_KEY"):
+    sys.exit("Set DASHSCOPE_API_KEY via secrun (see SECRETS.md) and try again.")
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key=os.getenv("DASHSCOPE_API_KEY")
+)
 
 # A stable, public sample image (OpenAI's own docs use this one): a wooden
 # boardwalk crossing a green marsh under a blue sky.
@@ -72,7 +75,7 @@ else:
 # `detail` can be "low" (cheaper, ~85 tokens, coarse), "high" (more tiles, more
 # detail, more tokens), or "auto" (the default).
 response = client.chat.completions.create(
-    model="gpt-4o-mini",  # the -mini models are multimodal too
+    model="qwen3.7-plus",  # the -mini models are multimodal too
     messages=[
         {  # type: ignore[arg-type]
             "role": "user",

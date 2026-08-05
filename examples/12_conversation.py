@@ -26,7 +26,7 @@ name?". It works, because the earlier turns are still in the list. Now look at
 `trim_history()` below: drop the early turns and the model genuinely forgets,
 because for the model the conversation *is* whatever list you send.
 """
-
+from pathlib import Path
 import os
 import sys
 
@@ -34,11 +34,35 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+USE_DEEPSEEK = True
+# USE_DEEPSEEK = False
 
-client = OpenAI()
+client: OpenAI
+model_name: str
+
+if USE_DEEPSEEK:
+    # 读取 DeepSeek Key
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        sys.exit("OPENAI_API_KEY not found in .env (see SECRETS.md), please check your configuration!")
+
+    client = OpenAI(
+        base_url="https://api.deepseek.com/v1",
+        api_key=api_key
+    )
+    model_name = "deepseek-v4-flash"
+    #extra_params = {}   # 云端：不带任何ollama私有参数
+
+else:
+    # 本地 Ollama Qwen3
+    client = OpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="dummy"
+    )
+    model_name = "qwen3:8b-q4_K_M"
+    #extra_params = {"keep_alive": -1} # 本地Ollama才启用驻留
 
 # The system message stays at index 0 for the whole conversation; the user and
 # assistant turns accumulate after it. This list IS the conversation's memory.
@@ -80,7 +104,7 @@ while True:
 
     # 2. Send the ENTIRE history every time. That's what gives the model context.
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=model_name,
         messages=messages,
     )
     reply = response.choices[0].message.content or ""
