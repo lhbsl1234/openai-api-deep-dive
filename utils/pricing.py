@@ -28,19 +28,55 @@ class ModelPrice:
 # A small, representative slice of the catalog. Add more as you explore.
 # (input $/1M, output $/1M)
 PRICING: dict[str, ModelPrice] = {
+    # ========== OpenAI ==========
     "gpt-4o":          ModelPrice(input_per_1m=2.50, output_per_1m=10.00),
     "gpt-4o-mini":     ModelPrice(input_per_1m=0.15, output_per_1m=0.60),
     "gpt-4-turbo":     ModelPrice(input_per_1m=10.00, output_per_1m=30.00),
     "gpt-3.5-turbo":   ModelPrice(input_per_1m=0.50, output_per_1m=1.50),
+    "o1-preview":      ModelPrice(input_per_1m=15.00, output_per_1m=60.00),
+    "o1-mini":         ModelPrice(input_per_1m=3.00, output_per_1m=12.00),
+
+    # ========== DeepSeek 系列（官方国际API基准价 USD/1M tokens） ==========
+    "deepseek-v4-flash":    ModelPrice(input_per_1m=0.14, output_per_1m=0.28),  # 原 deepseek-chat
+    "deepseek-v4-pro":      ModelPrice(input_per_1m=0.42, output_per_1m=0.84),
+    "deepseek-v3":          ModelPrice(input_per_1m=0.27, output_per_1m=1.10),
+    "deepseek-r1":          ModelPrice(input_per_1m=0.55, output_per_1m=2.20),  # 推理模型
+    "deepseek-coder-v2":    ModelPrice(input_per_1m=0.14, output_per_1m=0.28),
+
+    # ========== Qwen / 通义千问系列（国际版标准价 USD/1M tokens） ==========
+    "qwen3-max":            ModelPrice(input_per_1m=1.80, output_per_1m=6.00),
+    "qwen3-plus":           ModelPrice(input_per_1m=0.26, output_per_1m=0.78),
+    "qwen3-flash":          ModelPrice(input_per_1m=0.04, output_per_1m=0.16),
+    "qwen3.7-plus":         ModelPrice(input_per_1m=0.80, output_per_1m=3.20),   # 新增
+    "qwen3.8":              ModelPrice(input_per_1m=2.00, output_per_1m=6.00),   # 简称别名
+    "qwen3.8-max":          ModelPrice(input_per_1m=2.00, output_per_1m=6.00),   # 官方标准ID
+    "qwen2.5-72b-instruct": ModelPrice(input_per_1m=0.35, output_per_1m=0.40),
+    "qwen2.5-14b-instruct": ModelPrice(input_per_1m=0.10, output_per_1m=0.05),
+    "qwen2.5-7b-instruct":  ModelPrice(input_per_1m=0.01, output_per_1m=0.01),
 }
 
 # Embedding models (see examples/11_embeddings.py) are billed differently: there
 # is no "output" to generate, so you only pay for the tokens you send in. We keep
 # them in their own table with a single price per 1M tokens.
+# Price unit: USD per 1M input tokens
 EMBEDDING_PRICING: dict[str, float] = {
+    # ========== OpenAI Embedding ==========
     "text-embedding-3-small": 0.02,
     "text-embedding-3-large": 0.13,
     "text-embedding-ada-002": 0.10,
+
+    # ========== Qwen / 通义千问 Embedding（DashScope 国际版） ==========
+    "text-embedding-v2":    0.12,
+    "text-embedding-v3":    0.09,
+    "text-embedding-v4":    0.084,
+    "qwen3.7-text-embedding": 0.075,
+
+    # ========== DeepSeek Embedding（DeepSeek 官方国际API） ==========
+    "deepseek-embedding":   0.002,
+
+    # ========== 其他主流国产商用 Embedding 常用API名称 ==========
+    "bge-m3":               0.010,
+    "bge-large-zh-v1.5":    0.012,
 }
 
 
