@@ -35,11 +35,10 @@ import sys
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
-
-client = OpenAI()
+client = OpenAI(
+  api_key=os.getenv("DASHSCOPE_API_KEY"),
+  base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+)
 
 # Three independent jobs. In real life this might be thousands of lines.
 PROMPTS = {
@@ -59,7 +58,7 @@ def create_batch() -> str:
             "method": "POST",
             "url": "/v1/chat/completions",
             "body": {
-                "model": "gpt-4o-mini",
+                "model": "qwen3.7-plus",
                 "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 20,
             },

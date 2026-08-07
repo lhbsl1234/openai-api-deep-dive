@@ -40,16 +40,15 @@ import sys
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
-
-client = OpenAI()
+client = OpenAI(
+  api_key=os.getenv("DASHSCOPE_API_KEY"),
+  base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+)
 
 
 def confidence(question: str):
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="qwen3.7-plus",
         messages=[
             {"role": "system", "content": "Answer with exactly one word: Yes or No."},
             {"role": "user", "content": question},

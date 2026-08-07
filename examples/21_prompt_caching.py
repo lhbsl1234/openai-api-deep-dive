@@ -30,11 +30,10 @@ import sys
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
-
-client = OpenAI()
+client = OpenAI(
+  api_key=os.getenv("DASHSCOPE_API_KEY"),
+  base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+)
 
 # A long, STABLE prefix (must be ≥1024 tokens to be cacheable). We fake one by
 # repeating a policy block; in a real app this is your big system prompt, a tool
@@ -50,7 +49,7 @@ STABLE_PREFIX = (
 def ask(question: str):
     """Same long system prefix every time; only the question changes."""
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="qwen3.7-plus",
         messages=[
             {"role": "system", "content": STABLE_PREFIX},  # constant -> cacheable
             {"role": "user", "content": question},          # variable -> at the end

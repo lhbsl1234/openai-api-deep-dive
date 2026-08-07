@@ -36,11 +36,10 @@ import sys
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-if not os.getenv("OPENAI_API_KEY"):
-    sys.exit("Set OPENAI_API_KEY via secrun (see SECRETS.md) and try again.")
-
-client = OpenAI()
+client = OpenAI(
+  api_key=os.getenv("DASHSCOPE_API_KEY"),
+  base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+)
 
 PROMPT = (
     "Invent a quirky name and a one-sentence tagline for a coffee shop run by cats. "
@@ -51,7 +50,7 @@ TEMPERATURE = 0.9  # real randomness, so a fixed seed's effect is actually visib
 
 def generate(seed=None):
     resp = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="qwen3.7-plus",
         messages=[{"role": "user", "content": PROMPT}],
         temperature=TEMPERATURE,
         seed=seed,
